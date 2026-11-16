@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>[[${subject}]] Studio Workspace - E Learning</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle at 50% 10%, #1a1c29 0%, #0d0e15 100%);
+            color: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .navbar-custom {
+            background: rgba(26, 28, 41, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .card-3d {
+            background: rgba(30, 32, 47, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .sidebar-file-item {
+            background: rgba(18, 20, 32, 0.8);
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            transition: 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+        .sidebar-file-item:hover {
+            background: #2d3748;
+            border-color: #ff9f43;
+            color: #fff;
+        }
+        .btn-neon {
+            background: linear-gradient(135deg, #ff6b4a 0%, #ff856b 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(255, 107, 74, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-neon:hover {
+            background: linear-gradient(135deg, #ff856b 100%, #ffa588 100%);
+            box-shadow: 0 8px 25px rgba(255, 107, 74, 0.6);
+            color: white;
+        }
+        .form-control-custom {
+            background: rgba(18, 20, 32, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-radius: 10px;
+        }
+        .form-control-custom:focus {
+            background: rgba(18, 20, 32, 0.95);
+            border-color: #ff6b4a;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 107, 74, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4 py-3">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-light" th:href="@{/}">
+                <i class="fas fa-graduation-cap text-warning me-2"></i> E Learning <span class="text-muted ms-2">| Studio Workspace</span>
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a th:href="@{/startQuiz(subject=${subject}, difficulty='Easy')}" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark">
+                    <i class="fas fa-gamepad me-1"></i> Take [[${subject}]] Quiz
+                </a>
+                <a th:href="@{/}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                    <i class="fas fa-home me-1"></i> Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Studio Workspace Grid -->
+    <div class="container-fluid px-4 py-4">
+        <div class="row g-4">
+            
+            <!-- Left Sidebar: Uploads & Document Explorer -->
+            <div class="col-lg-3">
+                <div class="card card-3d p-4 h-100">
+                    <h5 class="text-warning fw-bold mb-3"><i class="fas fa-folder-open me-2"></i> [[${subject}]] Notebooks</h5>
+                    <p class="text-muted small mb-3">Upload lecture notes, manuals, or PDF resources for study tracking.</p>
+                    
+                    <!-- Upload Form -->
+                    <div class="mb-4">
+                        <input type="file" id="pdfFileInput" accept=".pdf" class="form-control form-control-sm form-control-custom mb-2">
+                        <button type="button" onclick="uploadSubjectPdf()" class="btn btn-neon btn-sm w-100 rounded-pill fw-bold">
+                            <i class="fas fa-cloud-upload-alt me-1"></i> Upload PDF Resource
+                        </button>
+                        <div id="uploadStatus" class="small mt-2"></div>
+                    </div>
+
+                    <hr class="border-secondary my-3">
+
+                    <h6 class="text-light fw-bold small mb-2"><i class="fas fa-file-pdf text-danger me-1"></i> Uploaded Files:</h6>
+                    <div class="overflow-auto" style="max-height: 350px;">
+                        <div th:if="${uploadedFiles.isEmpty()}" class="text-muted small fst-italic">No documents uploaded yet.</div>
+                        <div th:each="file : ${uploadedFiles}">
+                            <a th:href="@{'/uploads/' + ${subject} + '/' + ${file}}" target="_blank" class="sidebar-file-item small">
+                                <i class="fas fa-file-alt text-warning me-2"></i> [[${file}]]
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Panel: Deep AI Research Engine & PDF Viewer Workspace -->
+            <div class="col-lg-9">
+                <div class="card card-3d p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-warning fw-bold mb-0"><i class="fas fa-brain me-2"></i> AI Research & Deep Study Studio</h4>
+                        <span class="badge bg-danger px-3 py-2 rounded-pill">Subject: [[${subject}]]</span>
+                    </div>
+                    <p class="text-muted small mb-3">Ask any topic (e.g., <em>SDLC, OOPs, Multithreading, SQL Joins</em>) to get a multi-page detailed breakdown with code and direct reference links.</p>
+                    
+                    <!-- AI Prompt Search Bar -->
+                    <div class="input-group mb-3">
+                        <input type="text" id="aiPromptInput" class="form-control form-control-custom py-2" placeholder="Enter topic to research (e.g., SDLC, Polymorphism)...">
+                        <button class="btn btn-neon px-4 fw-bold" type="button" onclick="askAiResearch()">
+                            <i class="fas fa-search me-1"></i> Research Topic
+                        </button>
+                    </div>
+
+                    <!-- Audio Overview Control Bar (Podcast Mode) -->
+                    <div class="p-3 bg-dark rounded-3 border border-secondary mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-warning small"><i class="fas fa-headphones-alt me-2"></i> AI Audio Overview (Podcast Mode)</span>
+                            <span id="audioStatusBadge" class="badge bg-secondary">Ready</span>
+                        </div>
+                        <p class="small text-muted mb-2" style="font-size: 12px;">Listen to the complete AI study guide read aloud in natural speech.</p>
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="speakAiResponse()" class="btn btn-warning btn-sm fw-bold text-dark rounded-pill px-3">
+                                <i class="fas fa-play me-1"></i> Play Audio
+                            </button>
+                            <button type="button" onclick="pauseResumeAudio()" class="btn btn-outline-info btn-sm rounded-pill px-3" id="pauseBtn">
+                                <i class="fas fa-pause me-1"></i> Pause / Resume
+                            </button>
+                            <button type="button" onclick="stopAudio()" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                <i class="fas fa-stop me-1"></i> Stop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Response & Research Result Container -->
+                <div id="aiResponseContainer">
+                    <div class="p-4 bg-dark border border-secondary rounded-4 shadow-lg text-center text-muted">
+                        <i class="fas fa-graduation-cap fa-3x mb-3 text-warning"></i>
+                        <h5>Your AI Research Workspace is ready!</h5>
+                        <p class="small mb-0">Type any topic above or click "Research Topic" to explore comprehensive study notes, code examples, and live web links.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript for PDF Upload, Deep AI Research & Working Web Speech API -->
+    <script th:inline="javascript">
+        const currentSubject = /*[[${subject}]]*/ 'Java';
+
+        function uploadSubjectPdf() {
+            const fileInput = document.getElementById('pdfFileInput');
+            const statusDiv = document.getElementById('uploadStatus');
+            
+            if (!fileInput.files.length) {
+                statusDiv.innerHTML = "<span class='text-danger'>Please select a PDF file first.</span>";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            formData.append("subject", currentSubject);
+
+            statusDiv.innerHTML = "<span class='text-info'>Uploading...</span>";
+
+            fetch('/api/upload-pdf', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                statusDiv.innerHTML = "<span class='text-success'>" + result + "</span>";
+                setTimeout(() => location.reload(), 1000);
+            })
+            .catch(error => {
+                statusDiv.innerHTML = "<span class='text-danger'>Upload failed!</span>";
+            });
+        }
+
+        function askAiResearch() {
+            const promptInput = document.getElementById('aiPromptInput');
+            const responseContainer = document.getElementById('aiResponseContainer');
+            const query = promptInput.value.trim();
+
+            if (!query) {
+                alert("Please enter a topic to research!");
+                return;
+            }
+
+            responseContainer.innerHTML = "<div class='text-center py-5 text-warning'><i class='fas fa-spinner fa-spin fa-2x mb-2'></i><p>Generating deep multi-page research guide & reference links...</p></div>";
+
+            fetch('/api/ai-chat?subject=' + encodeURIComponent(currentSubject) + '&prompt=' + encodeURIComponent(query))
+                .then(response => response.text())
+                .then(htmlContent => {
+                    responseContainer.innerHTML = htmlContent;
+                })
+                .catch(err => {
+                    responseContainer.innerHTML = "<div class='alert alert-danger'>Failed to fetch AI research response.</div>";
+                });
+        }
+
+        // Web Speech API for Audio Overview (Podcast Mode)
+        let currentUtterance = null;
+        let isPaused = false;
+
+        function speakAiResponse() {
+            window.speechSynthesis.cancel();
+            isPaused = false;
+
+            const aiBox = document.getElementById('aiGeneratedContent');
+            let textToRead = "";
+
+            if (aiBox && aiBox.innerText.trim().length > 0) {
+                textToRead = aiBox.innerText;
+            } else {
+                textToRead = "Welcome to your E-Learning Audio Overview for " + currentSubject + ". Research any topic in the Studio search bar to generate a complete multi-page explanation.";
+            }
+
+            currentUtterance = new SpeechSynthesisUtterance(textToRead);
+            currentUtterance.lang = 'en-US';
+            currentUtterance.rate = 1.0;
+            currentUtterance.pitch = 1.0;
+
+            const statusBadge = document.getElementById('audioStatusBadge');
+
+            currentUtterance.onstart = function() {
+                if (statusBadge) {
+                    statusBadge.innerText = "🔊 Playing Audio...";
+                    statusBadge.className = "badge bg-success";
+                }
+            };
+
+            currentUtterance.onend = function() {
+                if (statusBadge) {
+                    statusBadge.innerText = "Completed";
+                    statusBadge.className = "badge bg-secondary";
+                }
+            };
+
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        function pauseResumeAudio() {
+            const statusBadge = document.getElementById('audioStatusBadge');
+            if (window.speechSynthesis.speaking) {
+                if (!isPaused) {
+                    window.speechSynthesis.pause();
+                    isPaused = true;
+                    if (statusBadge) {
+                        statusBadge.innerText = "⏸ Paused";
+                        statusBadge.className = "badge bg-warning text-dark";
+                    }
+                } else {
+                    window.speechSynthesis.resume();
+                    isPaused = false;
+                    if (statusBadge) {
+                        statusBadge.innerText = "🔊 Playing...";
+                        statusBadge.className = "badge bg-success";
+                    }
+                }
+            }
+        }
+
+        function stopAudio() {
+            window.speechSynthesis.cancel();
+            isPaused = false;
+            const statusBadge = document.getElementById('audioStatusBadge');
+            if (statusBadge) {
+                statusBadge.innerText = "Stopped";
+                statusBadge.className = "badge bg-danger";
+            }
+        }
+    </script>
+    
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

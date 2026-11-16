@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>[[${subject}]] Quiz Hub - E Learning</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: radial-gradient(circle at 50% 10%, #1a1c29 0%, #0d0e15 100%); color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+        .quiz-container { max-width: 780px; margin: 40px auto; background: rgba(30, 32, 47, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        .quiz-header { background: linear-gradient(135deg, #ff6b4a 0%, #ff9f43 100%); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(255, 107, 74, 0.3); }
+        .option-box { background: rgba(18, 20, 32, 0.85); border: 1px solid #4a5568; border-radius: 10px; padding: 14px 20px; margin-bottom: 12px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; }
+        .option-box:hover { background: #2d3748; border-color: #ff9f43; }
+        .option-box.selected { background: rgba(255, 107, 74, 0.15); border-color: #ff6b4a; }
+        .lifeline-btn { background: #ecc94b; color: #1a202c; font-weight: bold; border-radius: 20px; padding: 6px 15px; font-size: 13px; border: none; transition: 0.2s; }
+        .lifeline-btn:hover:not(:disabled) { background: #f6e05e; transform: translateY(-1px); }
+        .lifeline-btn:disabled { background: #4a5568 !important; color: #a0aec0 !important; cursor: not-allowed; opacity: 0.6; }
+        .timer-badge { background: #e53e3e; color: white; font-weight: bold; padding: 5px 14px; border-radius: 20px; font-size: 14px; }
+        .question-slide { display: none; }
+        .question-slide.active { display: block; }
+        .poll-bar-container { background: #121420; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid #4a5568; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="quiz-container">
+            
+            <!-- Header -->
+            <div class="quiz-header">
+                <h2 class="mb-1">📚 [[${subject}]] Quiz</h2>
+                <p class="mb-0 small">Difficulty: [[${difficulty}]] | E Learning Assessment</p>
+            </div>
+
+            <!-- Top Bar: Timer & Lifelines Status -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 bg-dark rounded border border-secondary gap-2">
+                <div>
+                    <span class="text-info fw-bold me-2"><i class="fas fa-clock me-1"></i> Time Left:</span>
+                    <span id="timer" class="timer-badge">02:00</span>
+                </div>
+                <div>
+                    <span class="text-warning small fw-bold me-2">Lifelines Left: <span id="lifelineCount">2</span>/2</span>
+                    <button type="button" class="lifeline-btn me-1" onclick="useFiftyFifty()" id="btn5050">
+                        <i class="fas fa-bolt me-1"></i> 50-50
+                    </button>
+                    <button type="button" class="lifeline-btn" onclick="useAudiencePoll()" id="btnPoll">
+                        <i class="fas fa-users me-1"></i> Audience Poll
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Form -->
+            <form id="quizForm" action="#" th:action="@{/submitQuiz}" method="post">
+                
+                <div th:each="q, iterStat : ${questions}" 
+                     class="question-slide" 
+                     th:classappend="${iterStat.index == 0} ? 'active' : ''"
+                     th:id="'slide_' + ${iterStat.index}"
+                     th:data-correct="${q.correctAnswer}">
+                    
+                    <h5 class="text-light mb-4 lh-base">
+                        <span class="text-warning fw-bold" th:text="'Q' + (${iterStat.index} + 1) + ' of ' + ${questions.size()} + ': '"></span>
+                        <span th:text="${q.questionText}">Question text</span>
+                    </h5>
+
+                    <div class="mb-4 options-container">
+                        <!-- Option 1 -->
+                        <div class="option-box" onclick="selectOption(this)">
+                            <input class="form-check-input me-3 mt-0" type="radio" th:name="'q_' + ${iterStat.index}" th:value="${q.option1}" th:id="'q' + ${iterStat.index} + '_1'">
+                            <label class="form-check-label text-light w-100 mb-0" style="cursor:pointer;" th:for="'q' + ${iterStat.index} + '_1'" th:text="${q.option1}"></label>
+                        </div>
+
+                        <!-- Option 2 -->
+                        <div class="option-box" onclick="selectOption(this)">
+                            <input class="form-check-input me-3 mt-0" type="radio" th:name="'q_' + ${iterStat.index}" th:value="${q.option2}" th:id="'q' + ${iterStat.index} + '_2'">
+                            <label class="form-check-label text-light w-100 mb-0" style="cursor:pointer;" th:for="'q' + ${iterStat.index} + '_2'" th:text="${q.option2}"></label>
+                        </div>
+
+                        <!-- Option 3 -->
+                        <div class="option-box" onclick="selectOption(this)" th:if="${q.option3 != null and q.option3 != ''}">
+                            <input class="form-check-input me-3 mt-0" type="radio" th:name="'q_' + ${iterStat.index}" th:value="${q.option3}" th:id="'q' + ${iterStat.index} + '_3'">
+                            <label class="form-check-label text-light w-100 mb-0" style="cursor:pointer;" th:for="'q' + ${iterStat.index} + '_3'" th:text="${q.option3}"></label>
+                        </div>
+
+                        <!-- Option 4 -->
+                        <div class="option-box" onclick="selectOption(this)" th:if="${q.option4 != null and q.option4 != ''}">
+                            <input class="form-check-input me-3 mt-0" type="radio" th:name="'q_' + ${iterStat.index}" th:value="${q.option4}" th:id="'q' + ${iterStat.index} + '_4'">
+                            <label class="form-check-label text-light w-100 mb-0" style="cursor:pointer;" th:for="'q' + ${iterStat.index} + '_4'" th:text="${q.option4}"></label>
+                        </div>
+                    </div>
+
+                    <!-- Visual Audience Poll Graph Box (Per Slide) -->
+                    <div class="poll-result-box p-3 bg-dark rounded border border-info d-none mb-3">
+                        <h6 class="text-info fw-bold mb-2"><i class="fas fa-chart-bar me-1"></i> Audience Poll Graph Results:</h6>
+                        <div class="poll-graph-content"></div>
+                    </div>
+
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="d-flex justify-content-between mt-4 pt-3 border-top border-secondary">
+                    <button type="button" class="btn btn-outline-light px-4 rounded-pill" id="prevBtn" onclick="changeSlide(-1)" style="display:none;">
+                        <i class="fas fa-arrow-left me-1"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-warning px-4 fw-bold ms-auto rounded-pill text-dark" id="nextBtn" onclick="changeSlide(1)">
+                        Next <i class="fas fa-arrow-right ms-1"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success px-5 fw-bold ms-auto rounded-pill" id="submitBtn" style="display:none;">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Quiz
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        let currentSlide = 0;
+        const totalSlides = /*[[${questions.size()}]]*/ 20;
+        let lifelinesRemaining = 2;
+        let timer;
+        let timeLeft = 120;
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 120;
+            document.getElementById('timer').innerText = "02:00";
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                document.getElementById('timer').innerText = 
+                    (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (currentSlide < totalSlides - 1) {
+                        changeSlide(1);
+                    } else {
+                        document.getElementById('quizForm').submit();
+                    }
+                }
+            }, 1000);
+        }
+
+        function selectOption(box) {
+            const radio = box.querySelector('input[type="radio"]');
+            if (radio) {
+                radio.checked = true;
+                const parent = box.parentElement;
+                parent.querySelectorAll('.option-box').forEach(b => b.classList.remove('selected'));
+                box.classList.add('selected');
+            }
+        }
+
+        function changeSlide(direction) {
+            const currentSlideEl = document.getElementById('slide_' + currentSlide);
+            if (currentSlideEl) currentSlideEl.classList.remove('active');
+            
+            currentSlide += direction;
+
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+
+            const nextSlideEl = document.getElementById('slide_' + currentSlide);
+            if (nextSlideEl) nextSlideEl.classList.add('active');
+            
+            document.getElementById('prevBtn').style.display = currentSlide === 0 ? 'none' : 'block';
+            if (currentSlide === totalSlides - 1) {
+                document.getElementById('nextBtn').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'block';
+            } else {
+                document.getElementById('nextBtn').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'none';
+            }
+
+            startTimer();
+        }
+
+        function updateLifelineUI() {
+            document.getElementById('lifelineCount').innerText = lifelinesRemaining;
+            if (lifelinesRemaining <= 0) {
+                document.getElementById('btn5050').disabled = true;
+                document.getElementById('btnPoll').disabled = true;
+            }
+        }
+
+        function useFiftyFifty() {
+            if (lifelinesRemaining <= 0) return;
+            
+            const activeSlide = document.getElementById('slide_' + currentSlide);
+            const correctAnswer = activeSlide.getAttribute('data-correct').trim();
+            const options = activeSlide.querySelectorAll('.option-box');
+            
+            let hiddenCount = 0;
+            options.forEach(box => {
+                const label = box.querySelector('label');
+                if (label) {
+                    const labelText = label.innerText.trim();
+                    if (labelText !== correctAnswer && hiddenCount < 2) {
+                        box.style.display = 'none';
+                        const radio = box.querySelector('input[type="radio"]');
+                        if (radio) radio.checked = false;
+                        box.classList.remove('selected');
+                        hiddenCount++;
+                    }
+                }
+            });
+
+            lifelinesRemaining--;
+            updateLifelineUI();
+        }
+
+        function useAudiencePoll() {
+            if (lifelinesRemaining <= 0) return;
+
+            const activeSlide = document.getElementById('slide_' + currentSlide);
+            const correctAnswer = activeSlide.getAttribute('data-correct').trim();
+            const options = activeSlide.querySelectorAll('.option-box');
+            
+            let graphHTML = '';
+            options.forEach((box, index) => {
+                if (box.style.display !== 'none') {
+                    const label = box.querySelector('label');
+                    if (label) {
+                        const labelText = label.innerText.trim();
+                        let percent = (labelText === correctAnswer) ? 72 : (8 + (index * 5));
+                        graphHTML += `
+                            <div class="poll-bar-container">
+                                <div class="d-flex justify-content-between small text-light mb-1">
+                                    <span>Option ${index + 1}: ${labelText}</span>
+                                    <span class="fw-bold text-warning">${percent}%</span>
+                                </div>
+                                <div class="w-100 bg-secondary rounded" style="height: 10px;">
+                                    <div style="width: ${percent}%; background: ${labelText === correctAnswer ? '#48bb78' : '#4299e1'}; height: 10px; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            const pollBox = activeSlide.querySelector('.poll-result-box');
+            const pollContent = activeSlide.querySelector('.poll-graph-content');
+            pollContent.innerHTML = graphHTML;
+            pollBox.classList.remove('d-none');
+
+            lifelinesRemaining--;
+            updateLifelineUI();
+        }
+
+        window.onload = function() {
+            startTimer();
+            updateLifelineUI();
+        };
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

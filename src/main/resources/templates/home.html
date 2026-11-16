@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>E Learning - 3D Study Studio Hub</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 3D Futuristic Background & Typography */
+        body {
+            background: radial-gradient(circle at 50% 10%, #1a1c29 0%, #0d0e15 100%);
+            color: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Glowing Header Navbar Style */
+        .navbar-custom {
+            background: rgba(26, 28, 41, 0.7);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 3D Floating Hero Title */
+        .hero-section {
+            padding: 40px 0 20px 0;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b4a 0%, #ff9f43 50%, #63b3ed 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(255, 107, 74, 0.3);
+        }
+
+        /* 3D Glassmorphism Cards with Hover Depth */
+        .card-3d {
+            background: rgba(30, 32, 47, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: 0.5s;
+        }
+
+        .card-3d:hover::before {
+            left: 100%;
+        }
+
+        .card-3d:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 107, 74, 0.5);
+            box-shadow: 0 20px 40px rgba(255, 107, 74, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Neon Buttons */
+        .btn-neon {
+            background: linear-gradient(135deg, #ff6b4a 0%, #ff856b 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(255, 107, 74, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-neon:hover {
+            background: linear-gradient(135deg, #ff856b 0%, #ffa588 100%);
+            box-shadow: 0 8px 25px rgba(255, 107, 74, 0.6);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* Form Controls */
+        .form-control-custom, .form-select-custom {
+            background: rgba(18, 20, 32, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-radius: 10px;
+        }
+        .form-control-custom:focus, .form-select-custom:focus {
+            background: rgba(18, 20, 32, 0.9);
+            border-color: #ff6b4a;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255, 107, 74, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4 py-3">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-light" href="#">
+                <i class="fas fa-graduation-cap text-warning me-2"></i> E Learning
+            </a>
+            <div class="ms-auto">
+                <a th:href="@{/leaderboard}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                    <i class="fas fa-trophy me-1"></i> Leaderboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="hero-title mb-2">Explore Your Study Notebooks</h1>
+            <p class="text-muted">Select a notebook to open its 3D Studio Workspace or launch KBC-style assessments.</p>
+        </div>
+
+        <!-- Featured Study Notebooks (All 5 Cards in Equal 3-Column Grid) -->
+        <h4 class="text-light fw-bold mb-4"><i class="fas fa-layer-group text-warning me-2"></i> Featured Study Notebooks</h4>
+        
+        <div class="row g-4 mb-5">
+            <!-- Java Notebook -->
+            <div class="col-md-4">
+                <div class="card card-3d p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="badge bg-danger mb-3 px-3 py-2 rounded-pill"><i class="fab fa-java me-1"></i> Java</span>
+                        <h4 class="fw-bold text-light mb-2">Java Enterprise Notebook</h4>
+                        <p class="text-muted small">JVM, OOP, Collections, Multithreading, Spring Boot Core architectures.</p>
+                    </div>
+                    <a th:href="@{/notebook(subject='Java')}" class="btn btn-neon btn-sm w-100 mt-3 rounded-pill">
+                        <i class="fas fa-arrow-right me-1"></i> Open Studio Workspace
+                    </a>
+                </div>
+            </div>
+
+            <!-- Python Notebook -->
+            <div class="col-md-4">
+                <div class="card card-3d p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="badge bg-success mb-3 px-3 py-2 rounded-pill"><i class="fab fa-python me-1"></i> Python</span>
+                        <h4 class="fw-bold text-light mb-2">Python AI & Data Notebook</h4>
+                        <p class="text-muted small">Generators, Lambdas, Pandas, Scikit-learn Machine Learning pipelines.</p>
+                    </div>
+                    <a th:href="@{/notebook(subject='Python')}" class="btn btn-neon btn-sm w-100 mt-3 rounded-pill">
+                        <i class="fas fa-arrow-right me-1"></i> Open Studio Workspace
+                    </a>
+                </div>
+            </div>
+
+            <!-- DBMS Notebook -->
+            <div class="col-md-4">
+                <div class="card card-3d p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill"><i class="fas fa-database me-1"></i> DBMS</span>
+                        <h4 class="fw-bold text-light mb-2">SQL & Relational DBs Notebook</h4>
+                        <p class="text-muted small">ACID properties, Normalization, Joins, Indexing, and Query Optimization.</p>
+                    </div>
+                    <a th:href="@{/notebook(subject='DBMS')}" class="btn btn-neon btn-sm w-100 mt-3 rounded-pill">
+                        <i class="fas fa-arrow-right me-1"></i> Open Studio Workspace
+                    </a>
+                </div>
+            </div>
+
+            <!-- C++ Notebook -->
+            <div class="col-md-4">
+                <div class="card card-3d p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="badge bg-primary mb-3 px-3 py-2 rounded-pill"><i class="fas fa-code me-1"></i> C++</span>
+                        <h4 class="fw-bold text-light mb-2">Advanced C++ Notebook</h4>
+                        <p class="text-muted small">STL, Pointers, Memory Management, Templates, and Polymorphism.</p>
+                    </div>
+                    <a th:href="@{/notebook(subject='C++')}" class="btn btn-neon btn-sm w-100 mt-3 rounded-pill">
+                        <i class="fas fa-arrow-right me-1"></i> Open Studio Workspace
+                    </a>
+                </div>
+            </div>
+
+            <!-- C Lang Notebook -->
+            <div class="col-md-4">
+                <div class="card card-3d p-4 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="badge bg-info text-dark mb-3 px-3 py-2 rounded-pill"><i class="fas fa-laptop-code me-1"></i> C Lang</span>
+                        <h4 class="fw-bold text-light mb-2">C Programming Notebook</h4>
+                        <p class="text-muted small">Memory Allocation, Structures, File Handling, and Pointers.</p>
+                    </div>
+                    <a th:href="@{/notebook(subject='C Lang')}" class="btn btn-neon btn-sm w-100 mt-3 rounded-pill">
+                        <i class="fas fa-arrow-right me-1"></i> Open Studio Workspace
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assessment Hub / Quiz Launcher 3D Card -->
+        <div class="card card-3d p-4 mb-5">
+            <h4 class="text-warning fw-bold mb-3"><i class="fas fa-gamepad me-2"></i> Assessment Hub (Quiz Mode)</h4>
+            <p class="text-muted small mb-4">Select your target subject and difficulty to launch the 20-question immersive test arena with 50-50 & Audience Poll lifelines.</p>
+            
+            <form th:action="@{/startQuiz}" method="get" class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <label class="form-label text-light small fw-bold">Notebook Subject:</label>
+                    <select name="subject" class="form-select form-select-custom">
+                        <option value="Java">Java Enterprise</option>
+                        <option value="Python">Python AI & Data</option>
+                        <option value="DBMS">SQL & Relational DBs</option>
+                        <option value="C++">Advanced C++</option>
+                        <option value="C Lang">C Programming</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-light small fw-bold">Difficulty Level:</label>
+                    <select name="difficulty" class="form-select form-select-custom">
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-neon w-100 py-2 rounded-pill fw-bold">
+                        <i class="fas fa-play me-1"></i> Launch Quiz
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
