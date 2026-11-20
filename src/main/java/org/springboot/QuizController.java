@@ -2,6 +2,8 @@ package org.springboot;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class QuizController implements WebMvcConfigurer {
@@ -28,7 +28,9 @@ public class QuizController implements WebMvcConfigurer {
     @Autowired(required = false)
     private QuestionRepository questionRepository;
 
-    // Updated path to point to static resources so files stay permanent with the project
+    @Autowired
+    private ResourceLoader resourceLoader;
+
     private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
 
     @Override
@@ -219,20 +221,28 @@ public class QuizController implements WebMvcConfigurer {
         model.addAttribute("subject", subject);
         model.addAttribute("selectedCategory", category);
         
-        String subjectFolder = UPLOAD_DIR + subject + "/";
-        File dir = new File(subjectFolder);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-
         List<String> uploadedFiles = new ArrayList<>();
-        if (dir.exists() && dir.listFiles() != null) {
-            for (File f : dir.listFiles()) {
-                if (f.isFile()) {
-                    uploadedFiles.add(f.getName());
+        try {
+            Resource resource = resourceLoader.getResource("classpath:static/uploads/" + subject);
+            if (resource.exists() && resource.getFile().exists() && resource.getFile().listFiles() != null) {
+                for (File f : resource.getFile().listFiles()) {
+                    if (f.isFile()) {
+                        uploadedFiles.add(f.getName());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // Fallback to physical path check if resource loader fails
+            File dir = new File(UPLOAD_DIR + subject + "/");
+            if (dir.exists() && dir.listFiles() != null) {
+                for (File f : dir.listFiles()) {
+                    if (f.isFile()) {
+                        uploadedFiles.add(f.getName());
+                    }
                 }
             }
         }
+
         model.addAttribute("uploadedFiles", uploadedFiles);
         return "notebook";
     }
@@ -241,56 +251,16 @@ public class QuizController implements WebMvcConfigurer {
     @ResponseBody
     public String getAiChatResponse(@RequestParam String subject, @RequestParam String prompt) {
         String cleanTopic = prompt.trim();
-        String lowerTopic = cleanTopic.toLowerCase();
-
         StringBuilder sb = new StringBuilder();
         sb.append("<div id='aiGeneratedContent' class='p-4 bg-dark border border-secondary rounded-4 shadow-lg text-light' style='line-height: 1.75;'>");
-
         sb.append("<div class='d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4'>");
         sb.append("<div><span class='badge bg-warning text-dark mb-2'>✨ Deep AI Research Engine</span>");
         sb.append("<h3 class='text-info fw-bold mb-0'>Comprehensive Guide: ").append(cleanTopic).append(" (").append(subject).append(")</h3></div>");
         sb.append("<button type='button' onclick='speakAiResponse()' class='btn btn-outline-info btn-sm rounded-pill px-3'><i class='fas fa-volume-up me-1'></i> Listen Audio</button>");
         sb.append("</div>");
-
         sb.append("<h5 class='text-warning fw-bold mt-3'>1. Executive Summary & Core Concept of ").append(cleanTopic).append("</h5>");
         sb.append("<p><strong>").append(cleanTopic).append("</strong> is a foundational concept in <strong>").append(subject).append("</strong> software engineering. It provides developers with a structured mechanism to organize logic, manage system memory efficiently, and build scalable enterprise applications.</p>");
-
-        sb.append("<h5 class='text-warning fw-bold mt-4'>2. Internal Architecture & Working Mechanism</h5>");
-        sb.append("<p>At runtime, <strong>").append(cleanTopic).append("</strong> operates through three distinct architectural layers:</p>");
-        sb.append("<ul>");
-        sb.append("<li class='mb-2'><strong>Initialization & Memory Allocation:</strong> Allocates dedicated stack/heap frames and binds references securely within the ").append(subject).append(" runtime.</li>");
-        sb.append("<li class='mb-2'><strong>Execution & State Management:</strong> Core business logic executes sequentially while maintaining data integrity and encapsulation rules.</li>");
-        sb.append("<li class='mb-2'><strong>Resource Cleanup:</strong> Unused references are dereferenced cleanly to prevent memory leaks and ensure high performance.</li>");
-        sb.append("</ul>");
-
-        sb.append("<h5 class='text-warning fw-bold mt-4'>3. Complete Code Example & Practical Usage in ").append(subject).append("</h5>");
-        sb.append("<pre class='bg-black text-success p-3 rounded border border-secondary small'>");
-        sb.append("// Production-Grade Implementation of ").append(cleanTopic).append(" in ").append(subject).append("\n");
-        sb.append("public class ").append(cleanTopic.replaceAll("[^a-zA-Z0-9]", "")).append("Demo {\n");
-        sb.append("    private String moduleName = \"").append(cleanTopic).append("\";\n\n");
-        sb.append("    public void executeCoreLogic() {\n");
-        sb.append("        System.out.println(\"Initializing \" + moduleName + \" within ").append(subject).append(" runtime...\");\n");
-        sb.append("        System.out.println(\"Execution completed successfully with O(n) efficiency!\");\n");
-        sb.append("    }\n\n");
-        sb.append("    public static void main(String[] args) {\n");
-        sb.append("        new ").append(cleanTopic.replaceAll("[^a-zA-Z0-9]", "")).append("Demo().executeCoreLogic();\n");
-        sb.append("    }\n");
-        sb.append("}");
-        sb.append("</pre>");
-
-        sb.append("<h5 class='text-warning fw-bold mt-4'>4. Key Advantages & Best Practices</h5>");
-        sb.append("<ul>");
-        sb.append("<li class='mb-2'><strong>Modularity & Reusability:</strong> Breaks complex problems into clean, maintainable components.</li>");
-        sb.append("<li class='mb-2'><strong>Performance Impact:</strong> Proper implementation reduces CPU overhead and improves response latency.</li>");
-        sb.append("</ul>");
-
-        sb.append("<h5 class='text-warning fw-bold mt-4'>5. Quick Exam & Interview Viva Takeaways</h5>");
-        sb.append("<div class='p-3 rounded bg-black border border-secondary mb-4 small'>");
-        sb.append("<p class='mb-1'>✅ <strong>One-Line Definition:</strong> ").append(cleanTopic).append(" standardizes how ").append(subject).append(" applications structure, process, and optimize operations reliably.</p>");
-        sb.append("<p class='mb-0'>✅ <strong>Real-World Use Case:</strong> Widely used in enterprise backend APIs, database management, and cloud microservices.</p>");
         sb.append("</div>");
-        sb.append("</div>");
-
         return sb.toString();
     }
 }
