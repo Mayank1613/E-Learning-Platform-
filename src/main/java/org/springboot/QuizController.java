@@ -2,8 +2,6 @@ package org.springboot;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,15 +26,13 @@ public class QuizController implements WebMvcConfigurer {
     @Autowired(required = false)
     private QuestionRepository questionRepository;
 
-    @Autowired
-    private ResourceLoader resourceLoader;
-
-    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
+    // Root folder path as seen in project explorer
+    private static final String UPLOAD_DIR = "uploads/";
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("classpath:/static/uploads/");
+                .addResourceLocations("file:uploads/");
     }
 
     public static class LeaderboardEntry {
@@ -221,28 +217,20 @@ public class QuizController implements WebMvcConfigurer {
         model.addAttribute("subject", subject);
         model.addAttribute("selectedCategory", category);
         
+        String subjectFolder = UPLOAD_DIR + subject + "/";
+        File dir = new File(subjectFolder);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         List<String> uploadedFiles = new ArrayList<>();
-        try {
-            Resource resource = resourceLoader.getResource("classpath:static/uploads/" + subject);
-            if (resource.exists() && resource.getFile().exists() && resource.getFile().listFiles() != null) {
-                for (File f : resource.getFile().listFiles()) {
-                    if (f.isFile()) {
-                        uploadedFiles.add(f.getName());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // Fallback to physical path check if resource loader fails
-            File dir = new File(UPLOAD_DIR + subject + "/");
-            if (dir.exists() && dir.listFiles() != null) {
-                for (File f : dir.listFiles()) {
-                    if (f.isFile()) {
-                        uploadedFiles.add(f.getName());
-                    }
+        if (dir.exists() && dir.listFiles() != null) {
+            for (File f : dir.listFiles()) {
+                if (f.isFile()) {
+                    uploadedFiles.add(f.getName());
                 }
             }
         }
-
         model.addAttribute("uploadedFiles", uploadedFiles);
         return "notebook";
     }
