@@ -1,5 +1,6 @@
 package org.springboot;
 
+import org.springboot.Question; // Agar Question class bhi org.springboot mein hai
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
