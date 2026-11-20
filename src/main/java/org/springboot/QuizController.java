@@ -28,12 +28,13 @@ public class QuizController implements WebMvcConfigurer {
     @Autowired(required = false)
     private QuestionRepository questionRepository;
 
-    private static final String UPLOAD_DIR = "uploads/";
+    // Updated path to point to static resources so files stay permanent with the project
+    private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:uploads/");
+                .addResourceLocations("classpath:/static/uploads/");
     }
 
     public static class LeaderboardEntry {
@@ -241,237 +242,55 @@ public class QuizController implements WebMvcConfigurer {
     public String getAiChatResponse(@RequestParam String subject, @RequestParam String prompt) {
         String cleanTopic = prompt.trim();
         String lowerTopic = cleanTopic.toLowerCase();
-        String encodedTopic = java.net.URLEncoder.encode(cleanTopic + " in " + subject, java.nio.charset.StandardCharsets.UTF_8);
 
         StringBuilder sb = new StringBuilder();
         sb.append("<div id='aiGeneratedContent' class='p-4 bg-dark border border-secondary rounded-4 shadow-lg text-light' style='line-height: 1.75;'>");
 
-        // Header Badge
         sb.append("<div class='d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-4'>");
         sb.append("<div><span class='badge bg-warning text-dark mb-2'>✨ Deep AI Research Engine</span>");
         sb.append("<h3 class='text-info fw-bold mb-0'>Comprehensive Guide: ").append(cleanTopic).append(" (").append(subject).append(")</h3></div>");
         sb.append("<button type='button' onclick='speakAiResponse()' class='btn btn-outline-info btn-sm rounded-pill px-3'><i class='fas fa-volume-up me-1'></i> Listen Audio</button>");
         sb.append("</div>");
 
-        if (lowerTopic.contains("sdlc")) {
-            sb.append("<h5 class='text-warning fw-bold mt-3'>1. Introduction & Definition of SDLC</h5>");
-            sb.append("<p><strong>Software Development Life Cycle (SDLC)</strong> is a structured, systematic engineering process used by software organizations to design, develop, test, and deploy high-quality software systems. In <strong>").append(subject).append("</strong> enterprise projects, SDLC ensures that software is delivered on time, within budget, and meets all functional and security requirements.</p>");
+        sb.append("<h5 class='text-warning fw-bold mt-3'>1. Executive Summary & Core Concept of ").append(cleanTopic).append("</h5>");
+        sb.append("<p><strong>").append(cleanTopic).append("</strong> is a foundational concept in <strong>").append(subject).append("</strong> software engineering. It provides developers with a structured mechanism to organize logic, manage system memory efficiently, and build scalable enterprise applications.</p>");
 
-            sb.append("<h5 class='text-warning fw-bold mt-4'>2. Detailed Breakdown of All 7 Phases of SDLC</h5>");
-            sb.append("<ol class='mb-4'>");
-            sb.append("<li class='mb-2'><strong>Phase 1: Planning & Feasibility Study:</strong> Project managers and stakeholders define project scope, cost estimation, resource allocation, and technical feasibility.</li>");
-            sb.append("<li class='mb-2'><strong>Phase 2: Requirement Analysis (SRS):</strong> Business analysts gather detailed user requirements and document them in a formal Software Requirement Specification (SRS) document.</li>");
-            sb.append("<li class='mb-2'><strong>Phase 3: System Architecture & Design (HLD & LLD):</strong> Architects create High-Level Design (architecture, database schema) and Low-Level Design (class diagrams, API contracts).</li>");
-            sb.append("<li class='mb-2'><strong>Phase 4: Implementation / Coding:</strong> Developers write clean, modular code using ").append(subject).append(" frameworks, version control (Git), and coding standards.</li>");
-            sb.append("<li class='mb-2'><strong>Phase 5: Software Testing & QA:</strong> QA engineers execute Unit Testing, Integration Testing, System Testing, and UAT to detect and fix bugs.</li>");
-            sb.append("<li class='mb-2'><strong>Phase 6: Deployment & Production Release:</strong> The verified build is deployed to production servers using CI/CD pipelines (Docker, Jenkins, Cloud).</li>");
-            sb.append("<li class='mb-2'><strong>Phase 7: Maintenance & Continuous Monitoring:</strong> Post-release support, performance tuning, security patches, and feature upgrades based on user feedback.</li>");
-            sb.append("</ol>");
+        sb.append("<h5 class='text-warning fw-bold mt-4'>2. Internal Architecture & Working Mechanism</h5>");
+        sb.append("<p>At runtime, <strong>").append(cleanTopic).append("</strong> operates through three distinct architectural layers:</p>");
+        sb.append("<ul>");
+        sb.append("<li class='mb-2'><strong>Initialization & Memory Allocation:</strong> Allocates dedicated stack/heap frames and binds references securely within the ").append(subject).append(" runtime.</li>");
+        sb.append("<li class='mb-2'><strong>Execution & State Management:</strong> Core business logic executes sequentially while maintaining data integrity and encapsulation rules.</li>");
+        sb.append("<li class='mb-2'><strong>Resource Cleanup:</strong> Unused references are dereferenced cleanly to prevent memory leaks and ensure high performance.</li>");
+        sb.append("</ul>");
 
-            sb.append("<h5 class='text-warning fw-bold mt-4'>3. Popular SDLC Models Compared</h5>");
-            sb.append("<ul>");
-            sb.append("<li><strong>Waterfall Model:</strong> Linear and sequential; best for fixed-requirement projects.</li>");
-            sb.append("<li><strong>Agile & Scrum Model:</strong> Iterative 2-week sprints with continuous client feedback; industry standard for modern web & enterprise apps.</li>");
-            sb.append("<li><strong>Spiral Model:</strong> Risk-driven iterative model used for large, mission-critical systems.</li>");
-            sb.append("</ul>");
+        sb.append("<h5 class='text-warning fw-bold mt-4'>3. Complete Code Example & Practical Usage in ").append(subject).append("</h5>");
+        sb.append("<pre class='bg-black text-success p-3 rounded border border-secondary small'>");
+        sb.append("// Production-Grade Implementation of ").append(cleanTopic).append(" in ").append(subject).append("\n");
+        sb.append("public class ").append(cleanTopic.replaceAll("[^a-zA-Z0-9]", "")).append("Demo {\n");
+        sb.append("    private String moduleName = \"").append(cleanTopic).append("\";\n\n");
+        sb.append("    public void executeCoreLogic() {\n");
+        sb.append("        System.out.println(\"Initializing \" + moduleName + \" within ").append(subject).append(" runtime...\");\n");
+        sb.append("        System.out.println(\"Execution completed successfully with O(n) efficiency!\");\n");
+        sb.append("    }\n\n");
+        sb.append("    public static void main(String[] args) {\n");
+        sb.append("        new ").append(cleanTopic.replaceAll("[^a-zA-Z0-9]", "")).append("Demo().executeCoreLogic();\n");
+        sb.append("    }\n");
+        sb.append("}");
+        sb.append("</pre>");
 
-            sb.append("<h5 class='text-warning fw-bold mt-4'>4. Practical Implementation Workflow Example (").append(subject).append(")</h5>");
-            sb.append("<pre class='bg-black text-success p-3 rounded border border-secondary small'>");
-            sb.append("// SDLC Automated Pipeline Simulation in ").append(subject).append("\n");
-            sb.append("public class SDLCPipeline {\n");
-            sb.append("    public static void main(String[] args) {\n");
-            sb.append("        String[] phases = {\"1. Planning\", \"2. SRS Analysis\", \"3. Design\", \"4. Coding\", \"5. Testing\", \"6. Deployment\", \"7. Maintenance\"};\n");
-            sb.append("        for (String phase : phases) {\n");
-            sb.append("            System.out.println(\"Executing SDLC Stage -> \" + phase + \" [Status: VERIFIED]\");\n");
-            sb.append("        }\n");
-            sb.append("    }\n");
-            sb.append("}");
-            sb.append("</pre>");
-        } else {
-            sb.append("<h5 class='text-warning fw-bold mt-3'>1. Executive Summary & Core Concept of ").append(cleanTopic).append("</h5>");
-            sb.append("<p><strong>").append(cleanTopic).append("</strong> is a foundational concept in <strong>").append(subject).append("</strong> software engineering. It provides developers with a structured mechanism to organize logic, manage system memory efficiently, and build scalable enterprise applications.</p>");
+        sb.append("<h5 class='text-warning fw-bold mt-4'>4. Key Advantages & Best Practices</h5>");
+        sb.append("<ul>");
+        sb.append("<li class='mb-2'><strong>Modularity & Reusability:</strong> Breaks complex problems into clean, maintainable components.</li>");
+        sb.append("<li class='mb-2'><strong>Performance Impact:</strong> Proper implementation reduces CPU overhead and improves response latency.</li>");
+        sb.append("</ul>");
 
-            sb.append("<h5 class='text-warning fw-bold mt-4'>2. Internal Architecture & Working Mechanism</h5>");
-            sb.append("<p>At runtime, <strong>").append(cleanTopic).append("</strong> operates through three distinct architectural layers:</p>");
-            sb.append("<ul>");
-            sb.append("<li class='mb-2'><strong>Initialization & Memory Allocation:</strong> Allocates dedicated stack/heap frames and binds references securely within the ").append(subject).append(" runtime.</li>");
-            sb.append("<li class='mb-2'><strong>Execution & State Management:</strong> Core business logic executes sequentially while maintaining data integrity and encapsulation rules.</li>");
-            sb.append("<li class='mb-2'><strong>Resource Cleanup:</strong> Unused references are dereferenced cleanly to prevent memory leaks and ensure high performance.</li>");
-            sb.append("</ul>");
-
-            sb.append("<h5 class='text-warning fw-bold mt-4'>3. Complete Code Example & Practical Usage in ").append(subject).append("</h5>");
-            sb.append("<pre class='bg-black text-success p-3 rounded border border-secondary small'>");
-            sb.append("// Production-Grade Implementation of ").append(cleanTopic).append(" in ").append(subject).append("\n");
-            sb.append("public class ").append(cleanTopic.replaceAll("[^a-zA-Z0-9]", "")).append("Demo {\n");
-            sb.append("    private String moduleName = \"").append(cleanTopic).append("\";\n\n");
-            sb.append("    public void executeCoreLogic() {\n");
-            sb.append("        System.out.println(\"Initializing \" + moduleName + \" within ").append(subject).append(" runtime...\");\n");
-            sb.append("        System.out.println(\"Execution completed successfully with O(n) efficiency!\");\n");
-            sb.append("    }\n\n");
-            sb.append("    public static void main(String[] args) {\n");
-            sb.append("        new ").append(cleanTopic.replaceAll("[^a-zA-Z0-9]", "")).append("Demo().executeCoreLogic();\n");
-            sb.append("    }\n");
-            sb.append("}");
-            sb.append("</pre>");
-
-            sb.append("<h5 class='text-warning fw-bold mt-4'>4. Key Advantages & Best Practices</h5>");
-            sb.append("<ul>");
-            sb.append("<li class='mb-2'><strong>Modularity & Reusability:</strong> Breaks complex problems into clean, maintainable components.</li>");
-            sb.append("<li class='mb-2'><strong>Performance Impact:</strong> Proper implementation reduces CPU overhead and improves response latency.</li>");
-            sb.append("</ul>");
-        }
-
-        // Section 5: Viva & Exam Quick Revision
         sb.append("<h5 class='text-warning fw-bold mt-4'>5. Quick Exam & Interview Viva Takeaways</h5>");
         sb.append("<div class='p-3 rounded bg-black border border-secondary mb-4 small'>");
         sb.append("<p class='mb-1'>✅ <strong>One-Line Definition:</strong> ").append(cleanTopic).append(" standardizes how ").append(subject).append(" applications structure, process, and optimize operations reliably.</p>");
         sb.append("<p class='mb-0'>✅ <strong>Real-World Use Case:</strong> Widely used in enterprise backend APIs, database management, and cloud microservices.</p>");
         sb.append("</div>");
-
-        // Section 6: Direct Clickable Reference Links (3-4 Examples)
-        sb.append("<h5 class='text-info fw-bold mt-4'><i class='fas fa-external-link-alt me-2'></i> Verified Reference Websites & Study Links</h5>");
-        sb.append("<p class='small text-muted mb-2'>Click any link below to open full documentation and examples directly on top platforms:</p>");
-        sb.append("<div class='row g-2'>");
-        
-        sb.append("<div class='col-md-6'><a href='https://www.geeksforgeeks.org/search/?gq=").append(encodedTopic)
-          .append("' target='_blank' class='btn btn-outline-success btn-sm w-100 text-start'><i class='fas fa-globe me-2'></i> 1. GeeksforGeeks: ").append(cleanTopic).append("</a></div>");
-        
-        sb.append("<div class='col-md-6'><a href='https://www.w3schools.com/googlesearch.asp?q=").append(encodedTopic)
-          .append("' target='_blank' class='btn btn-outline-info btn-sm w-100 text-start'><i class='fas fa-code me-2'></i> 2. W3Schools Tutorials: ").append(cleanTopic).append("</a></div>");
-        
-        sb.append("<div class='col-md-6'><a href='https://www.tutorialspoint.com/market/index.asp?search=").append(encodedTopic)
-          .append("' target='_blank' class='btn btn-outline-warning btn-sm w-100 text-start'><i class='fas fa-book-open me-2'></i> 3. TutorialsPoint Guide: ").append(cleanTopic).append("</a></div>");
-        
-        sb.append("<div class='col-md-6'><a href='https://en.wikipedia.org/w/index.php?search=").append(encodedTopic)
-          .append("' target='_blank' class='btn btn-outline-light btn-sm w-100 text-start'><i class='fab fa-wikipedia-w me-2'></i> 4. Wikipedia Encyclopedia: ").append(cleanTopic).append("</a></div>");
-        
-        sb.append("</div>");
         sb.append("</div>");
 
         return sb.toString();
-    }
-
-    @GetMapping("/startQuiz")
-    public String startCustomQuiz(@RequestParam(defaultValue = "Java") String subject,
-                                  @RequestParam(defaultValue = "Easy") String difficulty,
-                                  HttpSession session, Model model) {
-        
-        List<Question> questions = getQuestionsBySubjectAndDifficulty(subject, difficulty);
-
-        session.setAttribute("activeSubject", subject);
-        session.setAttribute("activeDifficulty", difficulty);
-        session.setAttribute("activeQuestions", questions);
-
-        model.addAttribute("questions", questions);
-        model.addAttribute("subject", subject);
-        model.addAttribute("difficulty", difficulty);
-        
-        return "quiz";
-    }
-
-    @PostMapping("/submitQuiz")
-    public String submitQuiz(@RequestParam Map<String, String> allParams, HttpSession session, Model model) {
-        List<Question> questions = (List<Question>) session.getAttribute("activeQuestions");
-        String subject = (String) session.getAttribute("activeSubject");
-        String difficulty = (String) session.getAttribute("activeDifficulty");
-
-        if (questions == null) {
-            questions = getFallbackQuestions("Java", "Easy");
-            subject = "Java";
-            difficulty = "Easy";
-        }
-
-        int score = 0;
-        int attempted = 0;
-        int totalQuestions = questions.size();
-
-        for (int i = 0; i < totalQuestions; i++) {
-            Question q = questions.get(i);
-            String userAnswer = allParams.get("q_" + i);
-            if (userAnswer != null && !userAnswer.trim().isEmpty()) {
-                attempted++;
-                if (userAnswer.trim().equalsIgnoreCase(q.getCorrectAnswer().trim())) {
-                    score++;
-                }
-            }
-        }
-
-        int unattempted = totalQuestions - attempted;
-        double percentage = totalQuestions > 0 ? ((double) score / totalQuestions) * 100 : 0;
-
-        String badge = percentage >= 80 ? "Scholar 🏆" : (percentage >= 50 ? "Achiever 🥈" : "Learner 🌱");
-        String formattedPercentage = String.format("%.2f", percentage);
-
-        session.setAttribute("userAnswers", allParams);
-        session.setAttribute("currentScore", score);
-        session.setAttribute("currentTotal", totalQuestions);
-        session.setAttribute("currentPercentage", formattedPercentage);
-        session.setAttribute("currentBadge", badge);
-
-        model.addAttribute("score", score);
-        model.addAttribute("total", totalQuestions);
-        model.addAttribute("attempted", attempted);
-        model.addAttribute("unattempted", unattempted);
-        model.addAttribute("percentage", formattedPercentage);
-        model.addAttribute("badge", badge);
-        model.addAttribute("subject", subject);
-        model.addAttribute("difficulty", difficulty);
-
-        return "result";
-    }
-
-    @GetMapping("/result")
-    public String showResultPage(HttpSession session, Model model) {
-        Integer score = (Integer) session.getAttribute("currentScore");
-        Integer total = (Integer) session.getAttribute("currentTotal");
-        String percentage = (String) session.getAttribute("currentPercentage");
-        String badge = (String) session.getAttribute("currentBadge");
-        String subject = (String) session.getAttribute("activeSubject");
-
-        if (score == null) return "redirect:/";
-
-        model.addAttribute("score", score);
-        model.addAttribute("total", total);
-        model.addAttribute("percentage", percentage);
-        model.addAttribute("badge", badge);
-        model.addAttribute("subject", subject);
-
-        return "result";
-    }
-
-    @PostMapping("/saveScore")
-    public String saveScore(@RequestParam String playerName, HttpSession session) {
-        Integer score = (Integer) session.getAttribute("currentScore");
-        Integer total = (Integer) session.getAttribute("currentTotal");
-        String subject = (String) session.getAttribute("activeSubject");
-
-        if (playerName != null && !playerName.trim().isEmpty() && score != null && total != null) {
-            leaderboard.add(new LeaderboardEntry(playerName, score, total, subject != null ? subject : "General"));
-            leaderboard.sort((a, b) -> Integer.compare(b.getScore(), a.getScore()));
-        }
-        return "redirect:/leaderboard";
-    }
-
-    @GetMapping("/leaderboard")
-    public String showLeaderboard(Model model) {
-        model.addAttribute("leaderboard", leaderboard);
-        return "leaderboard";
-    }
-
-    @GetMapping("/review")
-    public String reviewQuiz(HttpSession session, Model model) {
-        Map<String, String> userAnswers = (Map<String, String>) session.getAttribute("userAnswers");
-        List<Question> questions = (List<Question>) session.getAttribute("activeQuestions");
-        String subject = (String) session.getAttribute("activeSubject");
-
-        if (questions == null) {
-            questions = getFallbackQuestions("Java", "Easy");
-            subject = "Java";
-        }
-
-        model.addAttribute("questions", questions);
-        model.addAttribute("subject", subject != null ? subject : "Java");
-        model.addAttribute("userAnswers", userAnswers != null ? userAnswers : new HashMap<>());
-        return "review";
     }
 }
