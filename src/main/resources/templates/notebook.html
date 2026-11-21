@@ -1,1041 +1,236 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>[[${subject}]] Studio Workspace - E Learning</title>
-
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=1200">
+    <title>AI Research & Deep Study Studio</title>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-
-        /* =========================
-           GLOBAL DESIGN
-        ========================= */
-
-        * {
-            box-sizing: border-box;
+        :root {
+            --bg-base: #090d16;
+            --bg-surface: #111827;
+            --bg-card: rgba(17, 24, 39, 0.8);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
         }
 
         body {
-            background:
-                radial-gradient(circle at 50% 10%, #1a1c29 0%, #0d0e15 100%);
-
-            color: #f8f9fa;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* =========================
-           NAVBAR
-        ========================= */
-
-        .navbar-custom {
-            background: rgba(26, 28, 41, 0.88);
-            backdrop-filter: blur(15px);
-
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        .card-custom {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
         }
 
-        .navbar-brand {
-            font-size: 21px;
-            letter-spacing: 0.3px;
-        }
-
-        .navbar-brand i {
-            color: #ffb703 !important;
-        }
-
-        /* =========================
-           MAIN CONTAINER
-        ========================= */
-
-        .container-fluid {
-            max-width: 1800px;
-        }
-
-        /* =========================
-           GLASS CARDS
-        ========================= */
-
-        .card-3d {
-            background: rgba(30, 32, 47, 0.85);
-
-            backdrop-filter: blur(12px);
-
-            border: 1px solid rgba(255,255,255,0.09);
-
-            border-radius: 18px;
-
-            color: #f8f9fa;
-
-            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-
-            transition: all 0.3s ease;
-        }
-
-        .card-3d:hover {
-            transform: translateY(-3px);
-
-            border-color: rgba(255,159,67,0.35);
-
-            box-shadow: 0 15px 35px rgba(0,0,0,0.45);
-        }
-
-        /* =========================
-           TEXT VISIBILITY FIX
-        ========================= */
-
-        .card-3d .text-muted,
-        #aiResponseContainer .text-muted {
-            color: #B8C1D1 !important;
-            opacity: 1 !important;
-        }
-
-        .card-3d p {
-            color: #B8C1D1;
-            font-size: 14px;
-            line-height: 1.7;
-        }
-
-        .card-3d h4,
-        .card-3d h5,
-        .card-3d h6 {
-            color: #F8FAFC;
-        }
-
-        .text-warning {
-            color: #FFB703 !important;
-        }
-
-        /* =========================
-           SIDEBAR FILE ITEMS
-        ========================= */
-
-        .sidebar-file-item {
-            background: rgba(18,20,32,0.85);
-
-            border: 1px solid #3d4658;
-
-            border-radius: 10px;
-
-            padding: 12px 14px;
-
-            margin-bottom: 9px;
-
-            color: #E2E8F0;
-
-            transition: all 0.25s ease;
-
-            cursor: pointer;
-
-            text-decoration: none;
-
-            display: block;
-
-            word-break: break-word;
-        }
-
-        .sidebar-file-item:hover {
-            background: #2d3748;
-
-            border-color: #ff9f43;
-
+        .form-control, .form-select {
+            background-color: #0b0f19;
+            border: 1px solid var(--border-color);
             color: #ffffff;
-
-            transform: translateX(4px);
+            border-radius: 10px;
         }
 
-        /* =========================
-           NEON BUTTONS
-        ========================= */
+        .form-control:focus, .form-select:focus {
+            background-color: #0b0f19;
+            border-color: #6366f1;
+            color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
 
-        .btn-neon {
-            background: linear-gradient(
-                135deg,
-                #ff6b4a 0%,
-                #ff856b 100%
-            );
-
+        .btn-custom {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             border: none;
-
             color: white;
-
             font-weight: 600;
-
-            box-shadow: 0 5px 15px rgba(255,107,74,0.3);
-
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
-        .btn-neon:hover {
-            background: linear-gradient(
-                135deg,
-                #ff856b 0%,
-                #ffa588 100%
-            );
-
-            box-shadow: 0 8px 25px rgba(255,107,74,0.5);
-
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
             color: white;
-
-            transform: translateY(-2px);
         }
 
-        /* =========================
-           FORM CONTROLS
-        ========================= */
-
-        .form-control-custom {
-            background: rgba(18,20,32,0.95);
-
-            border: 1px solid rgba(255,255,255,0.18);
-
-            color: #ffffff;
-
-            border-radius: 10px;
+        .pdf-link {
+            color: #38bdf8;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .pdf-link:hover {
+            color: #7dd3fc;
+            text-decoration: underline;
         }
 
-        .form-control-custom::placeholder {
-            color: #929BAD;
-            opacity: 1;
-        }
-
-        .form-control-custom:focus {
-            background: rgba(18,20,32,1);
-
-            border-color: #ff6b4a;
-
-            color: #ffffff;
-
-            box-shadow: 0 0 12px rgba(255,107,74,0.25);
-        }
-
-        .form-control-custom:focus::placeholder {
-            color: #929BAD;
-        }
-
-        input[type="file"] {
-            color: #B8C1D1 !important;
-        }
-
-        /* =========================
-           AI RESEARCH SECTION
-        ========================= */
-
-        .research-heading {
-            color: #FFB703;
-
-            font-weight: 700;
-
-            letter-spacing: 0.3px;
-        }
-
-        .research-description {
-            color: #B8C1D1 !important;
-
-            line-height: 1.7;
-        }
-
-        #aiResponseContainer {
-            color: #F8FAFC;
-        }
-
-        #aiResponseContainer p {
-            color: #B8C1D1;
-            line-height: 1.8;
-        }
-
-        #aiResponseContainer h1,
-        #aiResponseContainer h2,
-        #aiResponseContainer h3,
-        #aiResponseContainer h4,
-        #aiResponseContainer h5 {
-            color: #F8FAFC;
-        }
-
-        /* =========================
-           AUDIO PLAYER SECTION
-        ========================= */
-
-        .audio-panel {
-            background: rgba(13,14,21,0.85);
-
-            border: 1px solid #3d4658;
-
-            border-radius: 14px;
-
-            padding: 18px;
-        }
-
-        .audio-panel p {
-            color: #B8C1D1;
-        }
-
-        /* =========================
-           SCROLLBAR
-        ========================= */
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #10111a;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #454b5c;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ff856b;
-        }
-
-        /* =========================
-           RESPONSIVE DESIGN
-        ========================= */
-
-        @media (max-width: 768px) {
-
-            .navbar-custom {
-                padding: 12px !important;
-            }
-
-            .navbar-brand {
-                font-size: 17px;
-            }
-
-            .navbar-brand span {
-                display: none;
-            }
-
-            .navbar-custom .btn {
-                font-size: 11px;
-                padding: 6px 10px !important;
-            }
-
-            .container-fluid {
-                padding-left: 14px !important;
-                padding-right: 14px !important;
-            }
-
-            .card-3d {
-                padding: 18px !important;
-            }
-
-            .research-heading {
-                font-size: 19px;
-            }
-
-            .audio-panel {
-                padding: 13px;
-            }
-
-            .audio-panel .btn {
-                font-size: 11px;
-                padding: 7px 10px !important;
-            }
-        }
-
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
     </style>
 </head>
-
 <body>
 
-    <!-- =========================
-         NAVBAR
-    ========================= -->
-
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4 py-3">
-
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark px-4 py-3" style="background: rgba(9, 13, 22, 0.85); border-bottom: 1px solid var(--border-color);">
         <div class="container-fluid">
-
-            <a class="navbar-brand fw-bold text-light" th:href="@{/}">
-
-                <i class="fas fa-graduation-cap me-2"></i>
-
-                E Learning
-
-                <span class="text-secondary ms-2">
-                    | Studio Workspace
-                </span>
-
+            <a class="navbar-brand fw-bold text-white" href="/">
+                <i class="fas fa-arrow-left me-2" style="color: #6366f1;"></i> Back to Notebooks
             </a>
-
-            <div class="ms-auto d-flex align-items-center gap-2">
-
-                <a th:href="@{/startQuiz(subject=${subject}, difficulty='Easy')}"
-                   class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark">
-
-                    <i class="fas fa-gamepad me-1"></i>
-
-                    Take [[${subject}]] Quiz
-
-                </a>
-
-                <a th:href="@{/}"
-                   class="btn btn-sm btn-outline-light rounded-pill px-3">
-
-                    <i class="fas fa-home me-1"></i>
-
-                    Home
-
-                </a>
-
+            <div class="ms-auto d-flex gap-3 align-items-center">
+                <span class="badge bg-secondary px-3 py-2 rounded-pill"><i class="fas fa-book-open me-1 text-warning"></i> Active Subject: <strong th:text="${subject}">Java</strong></span>
+                <a th:href="@{/quiz(subject=${subject},difficulty='Medium')}" class="btn btn-outline-light btn-sm rounded-pill px-3"><i class="fas fa-question-circle me-1 text-success"></i> Take Quiz</a>
             </div>
-
         </div>
-
     </nav>
 
-
-    <!-- =========================
-         MAIN WORKSPACE
-    ========================= -->
-
-    <div class="container-fluid px-4 py-4">
-
+    <!-- Notebook Studio Container -->
+    <div class="container-fluid py-4 px-4">
         <div class="row g-4">
-
-            <!-- LEFT SIDEBAR -->
-
-            <div class="col-lg-3">
-
-                <div class="card card-3d p-4 h-100">
-
-                    <h5 class="text-warning fw-bold mb-3">
-
-                        <i class="fas fa-folder-open me-2"></i>
-
-                        [[${subject}]] Notebooks
-
-                    </h5>
-
-                    <p class="text-muted small mb-3">
-
-                        Upload lecture notes, manuals, or PDF resources
-                        for study tracking.
-
-                    </p>
-
-
-                    <!-- PDF UPLOAD -->
-
-                    <div class="mb-4">
-
-                        <input type="file"
-                               id="pdfFileInput"
-                               accept=".pdf"
-                               class="form-control form-control-sm form-control-custom mb-2">
-
-                        <button type="button"
-                                onclick="uploadSubjectPdf()"
-                                class="btn btn-neon btn-sm w-100 rounded-pill fw-bold">
-
-                            <i class="fas fa-cloud-upload-alt me-1"></i>
-
-                            Upload PDF Resource
-
+            <!-- Left Sidebar: PDF Uploads & Resources -->
+            <div class="col-lg-4">
+                <div class="card card-custom p-4 mb-4">
+                    <h5 class="fw-bold text-white mb-3"><i class="fas fa-folder-open text-warning me-2"></i> <span th:text="${subject}">Java</span> Notebooks</h5>
+                    <p class="text-secondary small mb-3">Upload lecture notes, manuals, or PDF resources for study tracking.</p>
+                    
+                    <form id="uploadForm" enctype="multipart/form-data" class="mb-3">
+                        <input type="hidden" id="subjectInput" name="subject" th:value="${subject}">
+                        <div class="mb-3">
+                            <input class="form-control form-control-sm" type="file" id="pdfFile" name="file" accept=".pdf">
+                        </div>
+                        <button type="button" onclick="uploadPdf()" class="btn btn-custom w-100 btn-sm py-2">
+                            <i class="fas fa-cloud-upload-alt me-1"></i> Upload PDF Resource
                         </button>
-
-                        <div id="uploadStatus" class="small mt-2"></div>
-
-                    </div>
-
-
-                    <hr class="border-secondary my-3">
-
-
-                    <h6 class="text-light fw-bold small mb-3">
-
-                        <i class="fas fa-file-pdf text-danger me-1"></i>
-
-                        Uploaded Files:
-
-                    </h6>
-
-
-                    <!-- UPLOADED FILE LIST -->
-
-                    <div class="overflow-auto" style="max-height:350px;">
-
-                        <div th:if="${uploadedFiles.isEmpty()}"
-                             class="text-muted small fst-italic">
-
-                            No documents uploaded yet.
-
-                        </div>
-
-                        <div th:each="file : ${uploadedFiles}">
-
-                            <a th:href="@{'/uploads/' + ${subject} + '/' + ${file}}"
-                               target="_blank"
-                               class="sidebar-file-item small">
-
-                                <i class="fas fa-file-alt text-warning me-2"></i>
-
-                                [[${file}]]
-
-                            </a>
-
-                        </div>
-
-                    </div>
-
+                    </form>
+                    <div id="uploadStatus" class="small text-success mt-2"></div>
                 </div>
 
+                <div class="card card-custom p-4">
+                    <h6 class="fw-bold text-white mb-3"><i class="fas fa-file-pdf text-danger me-2"></i> Uploaded Files (Click to Open):</h6>
+                    <ul class="list-unstyled mb-0" id="fileList">
+                        <li th:if="${uploadedFiles != null and !uploadedFiles.empty}" th:each="file : ${uploadedFiles}" class="py-2 border-bottom border-secondary small">
+                            <a class="pdf-link d-flex align-items-center" th:href="@{'/uploads/' + ${subject} + '/' + ${file}}" target="_blank">
+                                <i class="fas fa-file-pdf text-danger me-2"></i> <span th:text="${file}"></span>
+                                <i class="fas fa-external-link-alt ms-auto small text-muted"></i>
+                            </a>
+                        </li>
+                        <li th:if="${uploadedFiles == null or uploadedFiles.empty}" class="text-muted small">No PDF resources uploaded yet.</li>
+                    </ul>
+                </div>
             </div>
 
-
-            <!-- RIGHT MAIN PANEL -->
-
-            <div class="col-lg-9">
-
-                <!-- AI RESEARCH CARD -->
-
-                <div class="card card-3d p-4 mb-4">
-
-                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-
-                        <h4 class="research-heading mb-0">
-
-                            <i class="fas fa-brain me-2"></i>
-
-                            AI Research & Deep Study Studio
-
-                        </h4>
-
-                        <span class="badge bg-danger px-3 py-2 rounded-pill">
-
-                            Subject: [[${subject}]]
-
-                        </span>
-
+            <!-- Right Workspace: AI Deep Study Studio -->
+            <div class="col-lg-8">
+                <div class="card card-custom p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h3 class="fw-bold text-white mb-1"><i class="fas fa-brain me-2" style="color: #6366f1;"></i> AI Research & Deep Study Studio</h3>
+                            <p class="text-secondary small mb-0">Ask any topic (e.g., JDBC, OOPs, Multithreading, SQL Joins) to get a detailed breakdown with code and reference links.</p>
+                        </div>
+                        <span class="badge bg-success text-dark px-3 py-2 fw-bold">Ready</span>
                     </div>
-
-
-                    <p class="research-description small mb-3">
-
-                        Ask any topic (e.g.,
-                        <em>SDLC, OOPs, Multithreading, SQL Joins</em>)
-                        to get a detailed breakdown with code and reference links.
-
-                    </p>
-
-
-                    <!-- AI SEARCH -->
 
                     <div class="input-group mb-3">
-
-                        <input type="text"
-                               id="aiPromptInput"
-                               class="form-control form-control-custom py-2"
-                               placeholder="Enter topic to research (e.g., SDLC, Polymorphism)...">
-
-                        <button class="btn btn-neon px-4 fw-bold"
-                                type="button"
-                                onclick="askAiResearch()">
-
-                            <i class="fas fa-search me-1"></i>
-
-                            Research Topic
-
+                        <input type="text" id="aiPrompt" class="form-control py-3" placeholder="Enter research topic (e.g. JDBC, Spring Boot, Interfaces)...">
+                        <button class="btn btn-custom px-4" type="button" onclick="fetchAiResearch()">
+                            <i class="fas fa-search me-1"></i> Research Topic
                         </button>
-
                     </div>
 
-
-                    <!-- AUDIO OVERVIEW -->
-
-                    <div class="audio-panel mb-3">
-
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-
-                            <span class="fw-bold text-warning small">
-
-                                <i class="fas fa-headphones-alt me-2"></i>
-
-                                AI Audio Overview (Podcast Mode)
-
-                            </span>
-
-                            <span id="audioStatusBadge"
-                                  class="badge bg-secondary">
-
-                                Ready
-
-                            </span>
-
+                    <!-- Audio Podcast Player Simulation -->
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded bg-black border border-secondary mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-podcast text-info fa-lg"></i>
+                            <span class="small text-light fw-bold">AI Audio Overview (Podcast Mode)</span>
                         </div>
-
-
-                        <p class="small mb-3" style="font-size:12px;">
-
-                            Listen to the study guide read aloud using
-                            your browser's speech functionality.
-
-                        </p>
-
-
-                        <div class="d-flex gap-2 flex-wrap">
-
-                            <button type="button"
-                                    onclick="speakAiResponse()"
-                                    class="btn btn-warning btn-sm fw-bold text-dark rounded-pill px-3">
-
-                                <i class="fas fa-play me-1"></i>
-
-                                Play Audio
-
-                            </button>
-
-
-                            <button type="button"
-                                    onclick="pauseResumeAudio()"
-                                    class="btn btn-outline-info btn-sm rounded-pill px-3"
-                                    id="pauseBtn">
-
-                                <i class="fas fa-pause me-1"></i>
-
-                                Pause / Resume
-
-                            </button>
-
-
-                            <button type="button"
-                                    onclick="stopAudio()"
-                                    class="btn btn-outline-danger btn-sm rounded-pill px-3">
-
-                                <i class="fas fa-stop me-1"></i>
-
-                                Stop
-
-                            </button>
-
+                        <div>
+                            <button type="button" onclick="speakAiResponse()" class="btn btn-sm btn-outline-info rounded-pill px-3"><i class="fas fa-play me-1"></i> Play Audio</button>
                         </div>
-
                     </div>
-
                 </div>
 
-
-                <!-- AI RESPONSE CONTAINER -->
-
-                <div id="aiResponseContainer">
-
-                    <div class="p-4 bg-dark border border-secondary rounded-4 shadow-lg text-center">
-
-                        <i class="fas fa-graduation-cap fa-3x mb-3 text-warning"></i>
-
-                        <h5 class="text-light">
-
-                            Your AI Research Workspace is ready!
-
-                        </h5>
-
-                        <p class="small text-muted mb-0">
-
-                            Type any topic above or click "Research Topic"
-                            to explore study notes, code examples and reference links.
-
-                        </p>
-
+                <!-- AI Generated Masterclass Output Area -->
+                <div id="aiResultContainer">
+                    <div class="card card-custom p-5 text-center text-muted">
+                        <i class="fas fa-lightbulb fa-3x mb-3 text-warning"></i>
+                        <h5>Your AI Masterclass Study Guide will appear here.</h5>
+                        <p class="small">Type any topic above and click Research Topic to generate a comprehensive 2-3 page deep dive guide with official documentation links.</p>
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
+    <!-- JavaScript for AJAX Calls -->
+    <script>
+        function fetchAiResearch() {
+            const prompt = document.getElementById('aiPrompt').value;
+            const subject = document.getElementById('subjectInput').value;
+            if(!prompt.trim()) {
+                alert('Please enter a topic to research!');
+                return;
+            }
 
-    <!-- =========================
-         JAVASCRIPT
-    ========================= -->
+            const container = document.getElementById('aiResultContainer');
+            container.innerHTML = `<div class='card card-custom p-5 text-center text-light'><div class='spinner-border mx-auto mb-3' style='color: #6366f1;' role='status'></div><h5>Generating comprehensive AI Masterclass & verified reference links...</h5></div>`;
 
-    <script th:inline="javascript">
+            fetch(`/api/ai-chat?subject=${encodeURIComponent(subject)}&prompt=${encodeURIComponent(prompt)}`)
+                .then(response => response.text())
+                .then(html => {
+                    container.innerHTML = html;
+                })
+                .catch(error => {
+                    container.innerHTML = `<div class='alert alert-danger'>Error generating research guide. Please try again.</div>`;
+                });
+        }
 
-        const currentSubject = /*[[${subject}]]*/ 'Java';
-
-
-        // =========================
-        // PDF UPLOAD
-        // =========================
-
-        function uploadSubjectPdf() {
-
-            const fileInput = document.getElementById('pdfFileInput');
-
+        function uploadPdf() {
+            const form = document.getElementById('uploadForm');
+            const formData = new FormData(form);
             const statusDiv = document.getElementById('uploadStatus');
 
-            if (!fileInput.files.length) {
-
-                statusDiv.innerHTML =
-                    "<span class='text-danger'>Please select a PDF file first.</span>";
-
-                return;
-            }
-
-            const selectedFile = fileInput.files[0];
-
-            if (selectedFile.type !== "application/pdf") {
-
-                statusDiv.innerHTML =
-                    "<span class='text-danger'>Only PDF files are allowed.</span>";
-
-                return;
-            }
-
-            const formData = new FormData();
-
-            formData.append("file", selectedFile);
-
-            formData.append("subject", currentSubject);
-
-            statusDiv.innerHTML =
-                "<span class='text-info'>Uploading PDF...</span>";
-
+            statusDiv.innerHTML = "Uploading file...";
 
             fetch('/api/upload-pdf', {
-
                 method: 'POST',
-
                 body: formData
-
             })
-
-            .then(response => {
-
-                if (!response.ok) {
-                    throw new Error("Upload failed");
-                }
-
-                return response.text();
-
-            })
-
+            .then(response => response.text())
             .then(result => {
-
-                statusDiv.innerHTML =
-                    "<span class='text-success'>" + result + "</span>";
-
-                setTimeout(() => location.reload(), 1200);
-
+                statusDiv.innerHTML = result;
+                setTimeout(() => location.reload(), 1500);
             })
-
             .catch(error => {
-
-                console.error(error);
-
-                statusDiv.innerHTML =
-                    "<span class='text-danger'>Upload failed! Please try again.</span>";
-
+                statusDiv.innerHTML = "Error uploading file.";
             });
-
         }
-
-
-        // =========================
-        // AI RESEARCH
-        // =========================
-
-        function askAiResearch() {
-
-            const promptInput = document.getElementById('aiPromptInput');
-
-            const responseContainer =
-                document.getElementById('aiResponseContainer');
-
-            const query = promptInput.value.trim();
-
-
-            if (!query) {
-
-                alert("Please enter a topic to research!");
-
-                return;
-            }
-
-
-            responseContainer.innerHTML = `
-
-                <div class="text-center py-5 text-warning">
-
-                    <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
-
-                    <p>
-                        Generating your study guide...
-                    </p>
-
-                </div>
-
-            `;
-
-
-            const requestUrl =
-                '/api/ai-chat?subject=' +
-                encodeURIComponent(currentSubject) +
-                '&prompt=' +
-                encodeURIComponent(query);
-
-
-            fetch(requestUrl)
-
-            .then(response => {
-
-                if (!response.ok) {
-                    throw new Error("Research request failed");
-                }
-
-                return response.text();
-
-            })
-
-            .then(htmlContent => {
-
-                responseContainer.innerHTML = htmlContent;
-
-            })
-
-            .catch(error => {
-
-                console.error(error);
-
-                responseContainer.innerHTML = `
-
-                    <div class="alert alert-danger">
-
-                        Failed to fetch AI research response.
-                        Please try again.
-
-                    </div>
-
-                `;
-
-            });
-
-        }
-
-
-        // =========================
-        // ENTER KEY SEARCH
-        // =========================
-
-        document.getElementById('aiPromptInput')
-            .addEventListener('keydown', function(event) {
-
-                if (event.key === 'Enter') {
-
-                    askAiResearch();
-
-                }
-
-            });
-
-
-        // =========================
-        // AUDIO OVERVIEW
-        // =========================
-
-        let currentUtterance = null;
-
-        let isPaused = false;
-
 
         function speakAiResponse() {
-
-            if (!('speechSynthesis' in window)) {
-
-                alert("Your browser does not support audio playback.");
-
+            const content = document.getElementById('aiGeneratedContent');
+            if (!content) {
+                alert('No study guide content available to play audio.');
                 return;
             }
-
-
-            window.speechSynthesis.cancel();
-
-            isPaused = false;
-
-
-            const aiBox =
-                document.getElementById('aiGeneratedContent');
-
-            let textToRead = "";
-
-
-            if (aiBox && aiBox.innerText.trim().length > 0) {
-
-                textToRead = aiBox.innerText;
-
-            } else {
-
-                textToRead =
-                    "Welcome to your E-Learning Audio Overview for " +
-                    currentSubject +
-                    ". Research any topic in the Studio search bar to generate a study explanation.";
-
-            }
-
-
-            currentUtterance =
-                new SpeechSynthesisUtterance(textToRead);
-
-
-            currentUtterance.lang = 'en-US';
-
-            currentUtterance.rate = 1.0;
-
-            currentUtterance.pitch = 1.0;
-
-
-            const statusBadge =
-                document.getElementById('audioStatusBadge');
-
-
-            currentUtterance.onstart = function() {
-
-                if (statusBadge) {
-
-                    statusBadge.innerText = "Playing Audio";
-
-                    statusBadge.className = "badge bg-success";
-
-                }
-
-            };
-
-
-            currentUtterance.onend = function() {
-
-                if (statusBadge) {
-
-                    statusBadge.innerText = "Completed";
-
-                    statusBadge.className = "badge bg-secondary";
-
-                }
-
-                isPaused = false;
-
-            };
-
-
-            currentUtterance.onerror = function() {
-
-                if (statusBadge) {
-
-                    statusBadge.innerText = "Audio Error";
-
-                    statusBadge.className = "badge bg-danger";
-
-                }
-
-            };
-
-
-            window.speechSynthesis.speak(currentUtterance);
-
+            const text = content.innerText;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            window.speechSynthesis.speak(utterance);
         }
-
-
-        // =========================
-        // PAUSE / RESUME AUDIO
-        // =========================
-
-        function pauseResumeAudio() {
-
-            const statusBadge =
-                document.getElementById('audioStatusBadge');
-
-
-            if (window.speechSynthesis.speaking) {
-
-                if (!isPaused) {
-
-                    window.speechSynthesis.pause();
-
-                    isPaused = true;
-
-
-                    if (statusBadge) {
-
-                        statusBadge.innerText = "Paused";
-
-                        statusBadge.className =
-                            "badge bg-warning text-dark";
-
-                    }
-
-                } else {
-
-                    window.speechSynthesis.resume();
-
-                    isPaused = false;
-
-
-                    if (statusBadge) {
-
-                        statusBadge.innerText = "Playing Audio";
-
-                        statusBadge.className = "badge bg-success";
-
-                    }
-
-                }
-
-            }
-
-        }
-
-
-        // =========================
-        // STOP AUDIO
-        // =========================
-
-        function stopAudio() {
-
-            window.speechSynthesis.cancel();
-
-            isPaused = false;
-
-
-            const statusBadge =
-                document.getElementById('audioStatusBadge');
-
-
-            if (statusBadge) {
-
-                statusBadge.innerText = "Stopped";
-
-                statusBadge.className = "badge bg-danger";
-
-            }
-
-        }
-
     </script>
-
-
-    <!-- Bootstrap JS -->
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
